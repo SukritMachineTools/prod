@@ -4,6 +4,7 @@ from PIL import Image, ImageTk
 from tkinter import messagebox
 import pandas as pd
 import re
+import datetime
 
 ##########################
 #   Configuration
@@ -29,6 +30,67 @@ class home:
         self.root.title("Sukrit Production Records")
         self.root.configure(background=bgcolor)
 
+        ################MACHINE FUNCTION 1############################
+        def machineFunc():
+            try:
+                # read google sheets
+                df = pd.read_csv(
+                    'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6HrGh7EOzzejrvzkG_TGUM_GoGVDuvlUq7UcYqHlESZX6Vv8Hvwatsp4FLdE4Nmff9z5LSG3KQFq9/pub?gid=1362009325&single=true&output=csv')
+            except:
+                df=pd.read_csv('./production.csv')
+            # renamed columns
+            df.rename(columns={'Rejection': 'M/C', 'Unnamed: 6': 'CASTING',
+                               'Unnamed: 7': 'OTHER', 'Timming': 'Start_Time', 'Unnamed: 11': 'End_Time',
+                               'Total Prod': 'Total_Prod', 'Final Prod': 'Final_Prod', 'Total Rej': 'Total_Rej'},
+                      inplace=True)
+            df = df.drop(index=0)
+            df = df.reset_index(drop=True)
+            df['Date'] = pd.to_datetime(df['Date'], format='%d-%m-%Y')
+
+            # Convert the 'time_string' column to time object
+            df['Start_Time'] = pd.to_datetime(df['Start_Time'], format='%H:%M')
+            df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H:%M')
+
+            # Calculate the time difference
+
+            df['time_difference1'] = df['End_Time'] - df['Start_Time']
+            df['time_difference1'] = df['time_difference1'] - pd.Timedelta(hours=1, minutes=30)
+            df['time_difference'] = df['time_difference1'].apply(
+                lambda x: '{:02d}:{:02d}'.format(int(x.seconds // 3600), int((x.seconds // 60) % 60)))
+
+            df['Start_Time'] = pd.to_datetime(df['Start_Time'], format='%H:%M').dt.time
+            df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H:%M').dt.time
+            df['time_difference'] = pd.to_datetime(df['time_difference'], format='%H:%M').dt.time
+
+            total_time = df['time_difference1'].sum()
+            # df=df.drop(['time_difference1'], axis=1)
+            total_hours = total_time.total_seconds() / 3600
+
+            # job = 'S.R. Shaft THD'
+            # breakTime = '01:30'
+            # start_date = '2023-06-01'
+            # end_date = '2023-07-07'
+
+            # mask = (df['date'] > start_date) & (df['date'] <= end_date)
+            mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
+            datedf = df.loc[mask]
+            newdf = datedf[datedf['Job'] == job]
+            newdf = newdf.reset_index(drop=True)
+            newdf = newdf.astype(
+                {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int',
+                 'Final_Prod': 'int'})
+            sumrow = {'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
+                      'CASTING': sum(newdf['CASTING']), 'OTHER': sum(newdf['OTHER']),
+                      'Final_Prod': sum(newdf['Final_Prod']), 'time_difference': total_hours}
+            sumrow = pd.DataFrame(sumrow, index=['Total'])
+            newdf = pd.concat([newdf, sumrow], axis=0)
+            machinedf = newdf.copy()
+            machinedf = machinedf.drop(['time_difference1'], axis=1)
+
+
+            return machinedf
+            pass
+
         #########format check#########################################
         def check_date_format(input_string):
             pattern = r'^\d{4}-\d{2}-\d{2}$'
@@ -50,9 +112,9 @@ class home:
                 err="Error"
                 return err
 
+        ###########MACHINE PAGE########################################################
         # Machine Frame
         def mpage():
-
             frame2 = Frame(self.root, bg="blue", height=15)
             Label(frame2, text="Production Records", fg="#ffffff", font="Algerian 20 bold", padx=7, pady=7,
                   bg="blue").grid(
@@ -60,7 +122,7 @@ class home:
                 column=1, sticky='n')
             frame2i = Frame(frame2, highlightbackground="blue", width=300, height=100, highlightthickness=1, bg=bgcolor)
             Label(frame2i, text="Start Date:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
+                  bg="blue").grid(
                 row=1,
                 column=1)
             Label(frame2i, text=start_date, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
@@ -68,7 +130,7 @@ class home:
                 row=1,
                 column=2)
             Label(frame2i, text="End Date:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
+                  bg="blue").grid(
                 row=1,
                 column=3)
             Label(frame2i, text=end_date, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
@@ -76,7 +138,7 @@ class home:
                 row=1,
                 column=4)
             Label(frame2i, text="Job:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
+                  bg="blue").grid(
                 row=1,
                 column=5)
             Label(frame2i, text=job, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
@@ -84,7 +146,7 @@ class home:
                 row=1,
                 column=6)
             Label(frame2i, text="Break Time:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
+                  bg="blue").grid(
                 row=1,
                 column=7)
             Label(frame2i, text=breakTime, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
@@ -93,6 +155,17 @@ class home:
                 column=8)
             frame2i.grid(row=1, column=1, ipadx=33.5, sticky="w")
             frame2.grid(row=1, ipadx=400, sticky='ew')
+
+            frame3 = Frame(self.root, highlightbackground="blue", width=300, height=100, highlightthickness=2,
+                           bg=bgcolor)
+
+            frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0, bg=bgcolor)
+
+            machinedf=machineFunc()
+
+
+            frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
+            frame3.grid(row=2, column=0, ipadx=33.5, sticky="ew")
             pass
 
         def submitD():
@@ -137,6 +210,7 @@ class home:
                 frame3.destroy()
                 mpage()
             pass
+
         #################################################################################################
 
         global job
