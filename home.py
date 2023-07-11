@@ -62,24 +62,23 @@ class home:
             df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H:%M').dt.time
             df['time_difference'] = pd.to_datetime(df['time_difference'], format='%H:%M').dt.time
 
-            total_time = df['time_difference1'].sum()
-            # df=df.drop(['time_difference1'], axis=1)
-            total_hours = total_time.total_seconds() / 3600
-
-            # job = 'S.R. Shaft THD'
-            # breakTime = '01:30'
-            # start_date = '2023-06-01'
-            # end_date = '2023-07-07'
+            job = 'S.R. Shaft THD'
+            breakTime = '01:30'
+            start_date = '2023-06-01'
+            end_date = '2023-07-07'
 
             # mask = (df['date'] > start_date) & (df['date'] <= end_date)
             mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
             datedf = df.loc[mask]
             newdf = datedf[datedf['Job'] == job]
             newdf = newdf.reset_index(drop=True)
+            total_time = newdf['time_difference1'].sum()
+            # df=df.drop(['time_difference1'], axis=1)
+            total_hours = total_time.total_seconds() / 3600
             newdf = newdf.astype(
                 {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int',
                  'Final_Prod': 'int'})
-            sumrow = {'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
+            sumrow = {'Date': 'Total', 'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
                       'CASTING': sum(newdf['CASTING']), 'OTHER': sum(newdf['OTHER']),
                       'Final_Prod': sum(newdf['Final_Prod']), 'time_difference': total_hours}
             sumrow = pd.DataFrame(sumrow, index=['Total'])

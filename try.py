@@ -24,9 +24,13 @@ def display_dataframe(dataframe):
     scrollbar = ttk.Scrollbar(root, orient="vertical", command=treeview.yview)
     treeview.configure(yscroll=scrollbar.set)
 
-    # Pack the Treeview and scrollbar
-    treeview.pack(side="left", fill="both", expand=True)
-    scrollbar.pack(side="right", fill="y")
+    # Grid layout configuration
+    treeview.grid(row=0, column=0, sticky="nsew")
+    scrollbar.grid(row=0, column=1, sticky="ns")
+
+    # Configure grid weights to resize properly
+    root.grid_rowconfigure(0, weight=1)
+    root.grid_columnconfigure(0, weight=1)
 
     root.mainloop()
 
@@ -37,7 +41,6 @@ data = {
     "City": ["New York", "London", "Paris"]
 }
 
-##########
 # read google sheets
 df = pd.read_csv(
     'https://docs.google.com/spreadsheets/d/e/2PACX-1vT6HrGh7EOzzejrvzkG_TGUM_GoGVDuvlUq7UcYqHlESZX6Vv8Hvwatsp4FLdE4Nmff9z5LSG3KQFq9/pub?gid=1362009325&single=true&output=csv')
@@ -65,10 +68,6 @@ df['Start_Time'] = pd.to_datetime(df['Start_Time'], format='%H:%M').dt.time
 df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H:%M').dt.time
 df['time_difference'] = pd.to_datetime(df['time_difference'], format='%H:%M').dt.time
 
-total_time = df['time_difference1'].sum()
-# df=df.drop(['time_difference1'], axis=1)
-total_hours = total_time.total_seconds() / 3600
-
 job = 'S.R. Shaft THD'
 breakTime = '01:30'
 start_date = '2023-06-01'
@@ -79,16 +78,19 @@ mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
 datedf = df.loc[mask]
 newdf = datedf[datedf['Job'] == job]
 newdf = newdf.reset_index(drop=True)
+total_time = newdf['time_difference1'].sum()
+# df=df.drop(['time_difference1'], axis=1)
+total_hours = total_time.total_seconds() / 3600
 newdf = newdf.astype(
     {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int', 'Final_Prod': 'int'})
-sumrow = {'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']), 'CASTING': sum(newdf['CASTING']),
-          'OTHER': sum(newdf['OTHER']), 'Final_Prod': sum(newdf['Final_Prod']), 'time_difference': total_hours}
+sumrow = {'Date': 'Total', 'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
+          'CASTING': sum(newdf['CASTING']), 'OTHER': sum(newdf['OTHER']), 'Final_Prod': sum(newdf['Final_Prod']),
+          'time_difference': total_hours}
 sumrow = pd.DataFrame(sumrow, index=['Total'])
 newdf = pd.concat([newdf, sumrow], axis=0)
 machinedf = newdf.copy()
 machinedf = machinedf.drop(['time_difference1'], axis=1)
-############
 
-# df = pd.read_csv('production.csv')
+df = pd.DataFrame(machinedf)
 
-display_dataframe(machinedf)
+display_dataframe(df)
