@@ -1,4 +1,6 @@
 from tkinter import *
+from tkinter.ttk import Treeview
+
 from PIL import Image, ImageTk
 # from tkinter import ttk
 from tkinter import messagebox
@@ -78,6 +80,7 @@ class home:
             newdf = newdf.astype(
                 {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int',
                  'Final_Prod': 'int'})
+            newdf['Date'] = newdf['Date'].dt.strftime('%d-%m-%Y')
             sumrow = {'Date': 'Total', 'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
                       'CASTING': sum(newdf['CASTING']), 'OTHER': sum(newdf['OTHER']),
                       'Final_Prod': sum(newdf['Final_Prod']), 'time_difference': total_hours}
@@ -85,7 +88,6 @@ class home:
             newdf = pd.concat([newdf, sumrow], axis=0)
             machinedf = newdf.copy()
             machinedf = machinedf.drop(['time_difference1'], axis=1)
-
 
             return machinedf
             pass
@@ -161,6 +163,32 @@ class home:
             frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0, bg=bgcolor)
 
             machinedf=machineFunc()
+            dataframe=machinedf
+            # Create a Treeview widget
+            treeview = Treeview(frame4)
+            treeview["columns"] = list(dataframe.columns)
+            treeview["show"] = "headings"
+
+            # Add columns to the Treeview
+            for column in dataframe.columns:
+                treeview.heading(column, text=column)
+                treeview.column(column, width=100)
+
+            # Add rows to the Treeview
+            for row in dataframe.itertuples(index=False):
+                treeview.insert("", "end", values=row)
+
+            # Add a vertical scrollbar to the Treeview
+            scrollbar = Scrollbar(frame4, orient="vertical", command=treeview.yview)
+            treeview.configure(yscroll=scrollbar.set)
+
+            # Grid layout configuration
+            treeview.grid(row=0, column=0, sticky="nsew")
+            scrollbar.grid(row=0, column=1, sticky="ns")
+
+            # Configure grid weights to resize properly
+            frame4.grid_rowconfigure(0, weight=1)
+            frame4.grid_columnconfigure(0, weight=1)
 
 
             frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")

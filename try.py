@@ -6,8 +6,12 @@ def display_dataframe(dataframe):
     root = tk.Tk()
     root.title("DataFrame Display")
 
+    # Create a Frame to hold the Treeview and scrollbar
+    frame = ttk.Frame(root)
+    frame.pack(fill="both", expand=True)
+
     # Create a Treeview widget
-    treeview = ttk.Treeview(root)
+    treeview = ttk.Treeview(frame)
     treeview["columns"] = list(dataframe.columns)
     treeview["show"] = "headings"
 
@@ -21,16 +25,16 @@ def display_dataframe(dataframe):
         treeview.insert("", "end", values=row)
 
     # Add a vertical scrollbar to the Treeview
-    scrollbar = ttk.Scrollbar(root, orient="vertical", command=treeview.yview)
+    scrollbar = ttk.Scrollbar(frame, orient="vertical", command=treeview.yview)
     treeview.configure(yscroll=scrollbar.set)
 
-    # Grid layout configuration
+    # Grid layout configuration within the Frame
     treeview.grid(row=0, column=0, sticky="nsew")
     scrollbar.grid(row=0, column=1, sticky="ns")
 
-    # Configure grid weights to resize properly
-    root.grid_rowconfigure(0, weight=1)
-    root.grid_columnconfigure(0, weight=1)
+    # Configure grid weights within the Frame to resize properly
+    frame.grid_rowconfigure(0, weight=1)
+    frame.grid_columnconfigure(0, weight=1)
 
     root.mainloop()
 
@@ -83,6 +87,7 @@ total_time = newdf['time_difference1'].sum()
 total_hours = total_time.total_seconds() / 3600
 newdf = newdf.astype(
     {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int', 'Final_Prod': 'int'})
+newdf['Date'] = newdf['Date'].dt.strftime('%d-%m-%Y')
 sumrow = {'Date': 'Total', 'Total_Prod': sum(newdf['Total_Prod']), 'M/C': sum(newdf['M/C']),
           'CASTING': sum(newdf['CASTING']), 'OTHER': sum(newdf['OTHER']), 'Final_Prod': sum(newdf['Final_Prod']),
           'time_difference': total_hours}
@@ -94,3 +99,4 @@ machinedf = machinedf.drop(['time_difference1'], axis=1)
 df = pd.DataFrame(machinedf)
 
 display_dataframe(df)
+
