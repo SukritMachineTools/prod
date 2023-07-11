@@ -311,7 +311,7 @@ class home:
             frame2i.grid(row=1, column=1, ipadx=33.5, sticky="w")
             frame2.grid(row=1, ipadx=400, sticky='ew')
 
-            frame3 = Frame(self.root, highlightbackground="blue", width=300, height=100, highlightthickness=2,
+            frame3 = Frame(self.root, highlightbackground="blue", width=winW, height=100, highlightthickness=2,
                            bg=bgcolor)
             operatordf,newdf=operatorFunc()
             element = job
@@ -321,37 +321,51 @@ class home:
             # Print the result
             if is_present:
                 print(f"The element '{element}' is present in the '{'Job'}' column.")
-                frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0,
+                frame4 = Frame(frame3, highlightbackground="blue", width=winW, height=100, highlightthickness=0,
                                bg=bgcolor)
 
                 dataframe = operatordf
-                # Create a Treeview widget
-                treeview = Treeview(frame4)
-                treeview["columns"] = list(dataframe.columns)
-                treeview["show"] = "headings"
+                # Create a canvas
+                canvas = Canvas(frame4,bg=bgcolor)
+                canvas.grid(row=0, column=0, sticky='nsew')
 
-                # Add columns to the Treeview
-                for column in dataframe.columns:
-                    treeview.heading(column, text=column)
-                    treeview.column(column, width=100)
+                # Add a horizontal scrollbar
+                scrollbar = Scrollbar(frame4, orient='horizontal', command=canvas.xview)
+                scrollbar.grid(row=1, column=0, sticky='ew')
+                canvas.configure(xscrollcommand=scrollbar.set)
 
-                # Add rows to the Treeview
-                for row in dataframe.itertuples(index=False):
-                    treeview.insert("", "end", values=row)
+                # Create a frame inside the canvas
+                df_frame = Frame(canvas,bg=bgcolor)
+                canvas.create_window((0, 0), window=df_frame, anchor='nw')
 
-                # Add a vertical scrollbar to the Treeview
-                scrollbar = Scrollbar(frame4, orient="vertical", command=treeview.yview)
-                treeview.configure(yscroll=scrollbar.set)
+                # Create a Pandas DataFrame table within the frame
+                table = Treeview(df_frame, columns=list(operatordf.columns), show='headings')
+                table.grid(row=0, column=0, sticky='nsew')
 
-                # Grid layout configuration
-                treeview.grid(row=0, column=0, sticky="nsew")
-                scrollbar.grid(row=0, column=1, sticky="ns")
+                # Insert column headers
+                for column in operatordf.columns:
+                    table.heading(column, text=column)
 
-                # Configure grid weights to resize properly
+                # Insert data rows
+                for _, row in operatordf.iterrows():
+                    table.insert('', 'end', values=list(row))
+
+                # Decrease the width of all columns
+                for column in operatordf.columns:
+                    table.column(column, width=80)  # Specify the desired width
+                # Configure the grid weights
+                # self.root.grid_rowconfigure(0, weight=1)
+                # self.root.grid_columnconfigure(0, weight=1)
                 frame4.grid_rowconfigure(0, weight=1)
                 frame4.grid_columnconfigure(0, weight=1)
+                df_frame.grid_rowconfigure(0, weight=1)
+                df_frame.grid_columnconfigure(0, weight=1)
 
-                frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
+                # Update the canvas scrolling region
+                canvas.update_idletasks()
+                canvas.configure(scrollregion=canvas.bbox('all'))
+
+                frame4.grid(row=0, column=0, ipadx=833.5, sticky="w")
 
             else:
                 print(f"The element '{element}' is not present in the '{'Job'}' column.")
@@ -363,7 +377,7 @@ class home:
                       fg="red").grid(row=0, column=0)
                 frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
 
-            frame3.grid(row=2, column=0, ipadx=33.5, sticky="ew")
+            frame3.grid(row=2, column=0, ipadx=13.5, sticky="ew")
 
             frame5 = Frame(self.root, bg="blue", height=10)
             # wlabel=Label(frame2,text="",bg="blue",height=10).grid(row=1)
@@ -557,7 +571,7 @@ class home:
             column=1,sticky='n')
         Label(frame2, text="Monthly Record", fg="#000000", font="Algerian 16 bold", padx=7, pady=7, bg=bgcolor).grid(
             row=1,
-            column=1, sticky='n')
+            column=0, sticky='n')
         frame2.grid(row=1, ipadx=400, sticky='ew')
         frame3 = Frame(self.root, highlightbackground="blue", width=300, height=100, highlightthickness=2, bg=bgcolor)
 
