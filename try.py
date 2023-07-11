@@ -78,7 +78,7 @@ start_date = '2023-06-01'
 end_date = '2023-07-07'
 
 # mask = (df['date'] > start_date) & (df['date'] <= end_date)
-mask = (df['Date'] > start_date) & (df['Date'] <= end_date)
+mask = (df['Date'] >= start_date) & (df['Date'] <= end_date)
 datedf = df.loc[mask]
 newdf = datedf[datedf['Job'] == job]
 newdf = newdf.reset_index(drop=True)
