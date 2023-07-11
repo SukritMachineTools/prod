@@ -95,6 +95,7 @@ sumrow = pd.DataFrame(sumrow, index=['Total'])
 newdf = pd.concat([newdf, sumrow], axis=0)
 machinedf = newdf.copy()
 machinedf = machinedf.drop(['time_difference1'], axis=1)
+machinedf = machinedf.fillna("...")
 
 df = pd.DataFrame(machinedf)
 
