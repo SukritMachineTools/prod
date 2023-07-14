@@ -326,7 +326,7 @@ class home:
 
                 dataframe = operatordf
                 # Create a canvas
-                canvas = Canvas(frame4,bg=bgcolor)
+                canvas = Canvas(frame4,bg=bgcolor,width=winW)
                 canvas.grid(row=0, column=0, sticky='nsew')
 
                 # Add a horizontal scrollbar
@@ -336,7 +336,7 @@ class home:
 
                 # Create a frame inside the canvas
                 df_frame = Frame(canvas,bg=bgcolor)
-                canvas.create_window((0, 0), window=df_frame, anchor='nw')
+                canvas.create_window((0, 0), window=df_frame, anchor='nw',width=winW)
 
                 # Create a Pandas DataFrame table within the frame
                 table = Treeview(df_frame, columns=list(operatordf.columns), show='headings')
@@ -365,7 +365,7 @@ class home:
                 canvas.update_idletasks()
                 canvas.configure(scrollregion=canvas.bbox('all'))
 
-                frame4.grid(row=0, column=0, ipadx=833.5, sticky="w")
+                frame4.grid(row=0, column=0, sticky="w")
 
             else:
                 print(f"The element '{element}' is not present in the '{'Job'}' column.")
@@ -582,13 +582,13 @@ class home:
               fg="blue").grid(row=1, column=0)
         sDatevalue = StringVar()
         Entry(frame4, width=10, textvariable=sDatevalue, font="Arial_Black 12 bold", ).grid(row=1, column=1)
-        Label(frame4, text="(2023-06-01)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+        Label(frame4, text="(YYYY-MM-DD)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
               fg="#000000").grid(row=2, column=0)
         Label(frame4, text="End Date", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
               fg="blue").grid(row=3, column=0)
         eDatevalue = StringVar()
         Entry(frame4, width=10, textvariable=eDatevalue, font="Arial_Black 12 bold", ).grid(row=3, column=1)
-        Label(frame4, text="(2023-06-01)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+        Label(frame4, text="(YYYY-MM-DD)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
               fg="#000000").grid(row=4, column=0)
         Label(frame4, text="Job", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
               fg="blue").grid(row=1, column=3)
