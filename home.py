@@ -22,6 +22,8 @@ breakTime='01:30'
 start_date= '2023-06-01'
 end_date= '2023-07-07'
 flag=0
+targetv = 55
+incentivev = 0.70
 ############################
 
 class home:
@@ -201,8 +203,8 @@ class home:
             prod_df = pd.DataFrame(product)
             prod_df['Deduct_Machine_rej'] = prod_df['Total_Prod'] - prod_df['M/C']
             prod_df['Deduct_Machine_rej'] = prod_df['Deduct_Machine_rej'].round(2)
-            targetv = 55
-            incentivev = 0.70
+            # targetv = 55
+            # incentivev = 0.70
             prod_df['Hours X Target'] = prod_df['HOURS'] * targetv
             prod_df['Hours X Target'] = prod_df['Hours X Target'].round(2)
             prod_df['Extra Prod'] = prod_df['Deduct_Machine_rej'] - prod_df['Hours X Target']
@@ -308,6 +310,22 @@ class home:
                   bg=bgcolor).grid(
                 row=1,
                 column=8)
+            Label(frame2i, text="Target:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+                  bg="blue").grid(
+                row=1,
+                column=9)
+            Label(frame2i, text=targetv, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+                  bg=bgcolor).grid(
+                row=1,
+                column=10)
+            Label(frame2i, text="Incentive:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+                  bg="blue").grid(
+                row=1,
+                column=11)
+            Label(frame2i, text=incentivev, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+                  bg=bgcolor).grid(
+                row=1,
+                column=12)
             frame2i.grid(row=1, column=1, ipadx=33.5, sticky="w")
             frame2.grid(row=1, ipadx=400, sticky='ew')
 
@@ -512,6 +530,8 @@ class home:
             global breakTime
             global start_date
             global end_date
+            global incentivev
+            global targetv
             flag=0
 
             if len(jobvalue.get()) > 0:
@@ -543,6 +563,25 @@ class home:
                 print("end date error")
                 messagebox.showerror("Error", "Enter correct End Date")
                 flag=1
+            if (targetvalue.get()).isdigit():
+                if int(targetvalue.get())>0:
+                    targetv=int(targetvalue.get())
+                else:
+                    messagebox.showerror("Error", "Enter valid target")
+                    flag=1
+            elif (re.match(r'^$', targetvalue.get())):
+                pass
+            else:
+                messagebox.showerror("Error", "Enter valid target")
+                flag = 1
+
+            if re.match(r'^[-+]?[0-9]*\.[0-9]+$', incentivevalue.get()):
+                incentivev=float(incentivevalue.get())
+            elif (re.match(r'^$', incentivevalue.get())):
+                pass
+            else:
+                messagebox.showerror("Error", "Enter valid incentive")
+                flag = 1
 
             if flag!=1:
                 frame2.destroy()
@@ -600,6 +639,26 @@ class home:
         Entry(frame4, width=20, textvariable=bTimevalue, font="Arial_Black 12 bold", ).grid(row=3, column=4)
         Label(frame4, text="(1:30)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
               fg="#000000").grid(row=4, column=3)
+        # Label(frame4, text="||", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
+        #       fg="blue").grid(row=1, column=4)
+        # Label(frame4, text="||", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+        #       fg="#000000").grid(row=2, column=4)
+        # Label(frame4, text="||", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
+        #       fg="blue").grid(row=3, column=4)
+        # Label(frame4, text="||", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+        #       fg="#000000").grid(row=4, column=4)
+        Label(frame4, text="Target", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
+              fg="blue").grid(row=1, column=5)
+        targetvalue = StringVar()
+        Entry(frame4, width=20, textvariable=targetvalue, font="Arial_Black 12 bold", ).grid(row=1, column=6)
+        Label(frame4, text="(55)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+              fg="#000000").grid(row=2, column=5)
+        Label(frame4, text="Incentive", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
+              fg="blue").grid(row=3, column=5)
+        incentivevalue = StringVar()
+        Entry(frame4, width=20, textvariable=incentivevalue, font="Arial_Black 12 bold", ).grid(row=3, column=6)
+        Label(frame4, text="(0.70)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
+              fg="#000000").grid(row=4, column=5)
         Button(frame4, command=submitD, text="SUBMIT", padx=30, bg="blue", fg="white").grid(row=5, column=1)
         frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
 
