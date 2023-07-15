@@ -8,12 +8,12 @@ def display_dataframe(dataframes):
 
     # Create a Frame to hold the Treeview and scrollbar
     frame = ttk.Frame(root)
-    frame.pack(fill="both", expand=True)
+    frame.grid( )
 
     for i,dataframe in enumerate(dataframes):
         # Create a new frame for each dataframe
         frame = tk.Frame(root)
-        frame.pack()
+        frame.grid()
         # Create a Treeview widget
         treeview = ttk.Treeview(frame)
         treeview["columns"] = list(dataframe.columns)

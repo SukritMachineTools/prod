@@ -434,14 +434,13 @@ class home:
             if len(datalist)>0:
                 frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0,
                                bg=bgcolor)
-
-
-
-
-                for dframe in datalist:
-                    dataframe = dframe
+                frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
+                for i, dataframe in enumerate(datalist):
+                    # Create a new frame for each dataframe
+                    frame = Frame(frame4)
+                    frame.grid()
                     # Create a Treeview widget
-                    treeview = Treeview(frame4)
+                    treeview = Treeview(frame)
                     treeview["columns"] = list(dataframe.columns)
                     treeview["show"] = "headings"
 
@@ -455,19 +454,16 @@ class home:
                         treeview.insert("", "end", values=row)
 
                     # Add a vertical scrollbar to the Treeview
-                    scrollbar = Scrollbar(frame4, orient="vertical", command=treeview.yview)
+                    scrollbar = Scrollbar(frame, orient="vertical", command=treeview.yview)
                     treeview.configure(yscroll=scrollbar.set)
 
-                    # Grid layout configuration
+                    # Grid layout configuration within the Frame
                     treeview.grid(row=0, column=0, sticky="nsew")
                     scrollbar.grid(row=0, column=1, sticky="ns")
 
-                    pass
-                    # Configure grid weights to resize properly
-                    frame4.grid_rowconfigure(0, weight=1)
-                    frame4.grid_columnconfigure(0, weight=1)
-
-                    frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
+                    # Configure grid weights within the Frame to resize properly
+                    frame.grid_rowconfigure(0, weight=1)
+                    frame.grid_columnconfigure(0, weight=1)
 
             else:
                 frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0,
