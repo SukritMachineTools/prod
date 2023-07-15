@@ -374,18 +374,87 @@ class home:
 
         def mactoMoPage():
             frame2.destroy()
+            frame2i.destroy()
             frame3.destroy()
             frame4.destroy()
             frame5.destroy()
             frame6.destroy()
             monthlyPage()
 
+        def hometoMoPage():
+            global job
+            global breakTime
+            global start_date
+            global end_date
+            global incentivev
+            global targetv
+            flag = 0
+
+            if len(jobvalue.get()) > 0:
+                job = jobvalue.get()
+                print(job)
+            # else:
+            #     print("job error")
+            #     messagebox.showerror("Error", "Enter the Job")
+            #     flag = 1
+
+            if check_btime_format(bTimevalue.get()) != "Error":
+                breakTime = check_btime_format(bTimevalue.get())
+                print(breakTime)
+            else:
+                print("btime error")
+                messagebox.showerror("Error", "Enter correct Break Time")
+                flag = 1
+            if check_date_format(sDatevalue.get()) != "Error":
+                start_date = check_date_format(sDatevalue.get())
+                print(start_date)
+            else:
+                print("st date error")
+                messagebox.showerror("Error", "Enter correct Start Date")
+                flag = 1
+            if check_date_format(eDatevalue.get()) != "Error":
+                end_date = check_date_format(eDatevalue.get())
+                print(end_date)
+            else:
+                print("end date error")
+                messagebox.showerror("Error", "Enter correct End Date")
+                flag = 1
+            if (targetvalue.get()).isdigit():
+                if int(targetvalue.get()) > 0:
+                    targetv = int(targetvalue.get())
+                else:
+                    messagebox.showerror("Error", "Enter valid target")
+                    flag = 1
+            elif (re.match(r'^$', targetvalue.get())):
+                pass
+            else:
+                messagebox.showerror("Error", "Enter valid target")
+                flag = 1
+
+            if re.match(r'^[-+]?[0-9]*\.[0-9]+$', incentivevalue.get()):
+                incentivev = float(incentivevalue.get())
+            elif (re.match(r'^$', incentivevalue.get())):
+                pass
+            else:
+                messagebox.showerror("Error", "Enter valid incentive")
+                flag = 1
+
+            if flag != 1:
+                frame2.destroy()
+                frame3.destroy()
+                frame4.destroy()
+                monthlyPage()
+
 
         #########Monthly Page#######################################################
         def monthlyPage():
-            global frame5
-            global frame6
-            global frame2i
+            # global frame5
+            # global frame6
+            # global frame2i
+
+
+
+
             frame2 = Frame(self.root, bg="blue", height=15)
             Label(frame2, text="Monthly Production", fg="#ffffff", font="Algerian 20 bold", padx=7, pady=7,
                   bg="blue").grid(
@@ -408,22 +477,22 @@ class home:
                   bg=bgcolor).grid(
                 row=1,
                 column=4)
-            Label(frame2i, text="Job:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg="blue").grid(
-                row=1,
-                column=5)
-            Label(frame2i, text=job, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
-                row=1,
-                column=6)
-            Label(frame2i, text="Break Time:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg="blue").grid(
-                row=1,
-                column=7)
-            Label(frame2i, text=breakTime, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
-                  bg=bgcolor).grid(
-                row=1,
-                column=8)
+            # Label(frame2i, text="Job:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+            #       bg="blue").grid(
+            #     row=1,
+            #     column=5)
+            # Label(frame2i, text=job, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+            #       bg=bgcolor).grid(
+            #     row=1,
+            #     column=6)
+            # Label(frame2i, text="Break Time:", fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+            #       bg="blue").grid(
+            #     row=1,
+            #     column=7)
+            # Label(frame2i, text=breakTime, fg="#000000", font="Algerian 16 bold", padx=7, pady=7,
+            #       bg=bgcolor).grid(
+            #     row=1,
+            #     column=8)
             frame2i.grid(row=1, column=1, ipadx=33.5, sticky="w")
             frame2.grid(row=1, ipadx=400, sticky='ew')
 
@@ -432,15 +501,22 @@ class home:
             datalist=monthlyFunc()
 
             if len(datalist)>0:
+                # Create a scrollbar
+                scrollBar = Scrollbar(frame3)
+                scrollBar.grid(row=0, column=1, sticky="ns")
+                # Configure the scrollbar to work with the Treeview widget
+                # scrollBar.config(command=treeview.yview)
                 frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0,
                                bg=bgcolor)
+
+
                 frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
                 for i, dataframe in enumerate(datalist):
                     # Create a new frame for each dataframe
                     frame = Frame(frame4)
-                    frame.grid()
+                    frame.grid(row=i)
                     # Create a Treeview widget
-                    treeview = Treeview(frame)
+                    treeview = Treeview(frame,yscrollcommand=scrollBar.set,height=5)
                     treeview["columns"] = list(dataframe.columns)
                     treeview["show"] = "headings"
 
@@ -460,10 +536,16 @@ class home:
                     # Grid layout configuration within the Frame
                     treeview.grid(row=0, column=0, sticky="nsew")
                     scrollbar.grid(row=0, column=1, sticky="ns")
+                    scrollBar.config(command=treeview.yview)
 
                     # Configure grid weights within the Frame to resize properly
                     frame.grid_rowconfigure(0, weight=1)
                     frame.grid_columnconfigure(0, weight=1)
+
+
+
+
+
 
             else:
                 frame4 = Frame(frame3, highlightbackground="blue", width=300, height=100, highlightthickness=0,
@@ -490,7 +572,7 @@ class home:
                                                                                                                   column=1,
                                                                                                                   padx=20,
                                                                                                                   pady=10)
-            Button(frame6, text="Monthly Report", command=mactoMoPage, padx=30, bg="#ffcc99", fg="#000000").grid(row=0,
+            Button(frame6, text="Monthly Report", padx=30, bg="#ffcc99", fg="#000000").grid(row=0,
                                                                                                                  column=2,
                                                                                                                  padx=20,
                                                                                                                  pady=10)
@@ -644,6 +726,9 @@ class home:
         ###########MACHINE PAGE########################################################
         # Machine Frame
         def mpage():
+            global frame2
+            global frame3
+            global frame4
             global frame5
             global frame6
             global frame2i
@@ -755,6 +840,8 @@ class home:
 
             pass
 
+
+
         def submitD():
             global job
             global breakTime
@@ -816,6 +903,7 @@ class home:
             if flag!=1:
                 frame2.destroy()
                 frame3.destroy()
+                frame4.destroy()
                 mpage()
             pass
 
@@ -835,7 +923,7 @@ class home:
             column=2)
         frame1.grid(row=0, ipadx=600, sticky="ew")
         frame2 = Frame(self.root, bg="blue", height=15)
-        Label(frame2, text="Production Records", fg="#ffffff", font="Algerian 20 bold", padx=7, pady=7, bg="blue").grid(
+        Label(frame2, text="Production Soft", fg="#ffffff", font="Algerian 20 bold", padx=7, pady=7, bg="blue").grid(
             row=0,
             column=1,sticky='n')
         Label(frame2, text="Monthly Record", fg="#000000", font="Algerian 16 bold", padx=7, pady=7, bg=bgcolor).grid(
@@ -890,6 +978,7 @@ class home:
         Label(frame4, text="(0.70)", font="Calibri 10 bold", padx=7, pady=7, bg=bgcolor,
               fg="#000000").grid(row=4, column=5)
         Button(frame4, command=submitD, text="SUBMIT", padx=30, bg="blue", fg="white").grid(row=5, column=1)
+        Button(frame4, command=hometoMoPage, text="Monthly Report", padx=30, bg="blue", fg="white").grid(row=5, column=4)
         frame4.grid(row=0, column=0, ipadx=33.5, sticky="w")
 
         frame3.grid(row=2, column=0, ipadx=33.5, sticky="ew")
