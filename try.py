@@ -2,10 +2,52 @@ import tkinter as tk
 from tkinter import ttk
 import pandas as pd
 
-# Create a sample DataFrame
-data = {'Name': ['John', 'Alice', 'Bob', 'Jane'],
-        'Age': [25, 30, 20, 35],
-        'City': ['New York', 'Paris', 'London', 'Sydney']}
+def display_dataframe(dataframes):
+    root = tk.Tk()
+    root.title("DataFrame Display")
+
+    # Create a Frame to hold the Treeview and scrollbar
+    frame = ttk.Frame(root)
+    frame.pack(fill="both", expand=True)
+
+    for i,dataframe in enumerate(dataframes):
+        # Create a new frame for each dataframe
+        frame = tk.Frame(root)
+        frame.pack()
+        # Create a Treeview widget
+        treeview = ttk.Treeview(frame)
+        treeview["columns"] = list(dataframe.columns)
+        treeview["show"] = "headings"
+
+        # Add columns to the Treeview
+        for column in dataframe.columns:
+            treeview.heading(column, text=column)
+            treeview.column(column, width=100)
+
+        # Add rows to the Treeview
+        for row in dataframe.itertuples(index=False):
+            treeview.insert("", "end", values=row)
+
+        # Add a vertical scrollbar to the Treeview
+        scrollbar = ttk.Scrollbar(frame, orient="vertical", command=treeview.yview)
+        treeview.configure(yscroll=scrollbar.set)
+
+        # Grid layout configuration within the Frame
+        treeview.grid(row=0, column=0, sticky="nsew")
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        # Configure grid weights within the Frame to resize properly
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+    root.mainloop()
+
+# Example usage
+data = {
+    "Name": ["Alice", "Bob", "Charlie"],
+    "Age": [25, 30, 35],
+    "City": ["New York", "London", "Paris"]
+}
 
 # read google sheets
 df = pd.read_csv(
@@ -34,8 +76,8 @@ df['Start_Time'] = pd.to_datetime(df['Start_Time'], format='%H:%M').dt.time
 df['End_Time'] = pd.to_datetime(df['End_Time'], format='%H:%M').dt.time
 df['time_difference'] = pd.to_datetime(df['time_difference'], format='%H:%M').dt.time
 
-job = 'S.R. Shaft THD'
-breakTime = '01:30'
+job='S.R. Shaft THD'
+breakTime='01:30'
 start_date = '2023-06-01'
 end_date = '2023-07-07'
 
@@ -57,125 +99,48 @@ sumrow = pd.DataFrame(sumrow, index=['Total'])
 newdf = pd.concat([newdf, sumrow], axis=0)
 
 # Get the distinct values in a specific column
-distinct_values = newdf['Operator'].unique()  # Replace 'column_name' with the actual column name
+distinct_values_Job = df['Job'].unique()
+distinct_values_Job = list(distinct_values_Job)
+distinct_values_Job.pop()
 
-distinct_values = list(distinct_values)
-distinct_values.pop()
-days = []
-total_hours = []
-sum_prod = []
-sum_mc = []
-sum_cast = []
-sum_other = []
-sum_finalprod = []
-avg_hourly = []
-avg_day = []
-for i in range(len(distinct_values)):
-    op1 = newdf[newdf['Operator'] == distinct_values[i]]
-    daysop = op1.shape[0]
-    days.append(daysop)
-    total_timeop = op1['time_difference1'].sum()
-    total_hoursop = round((total_timeop.total_seconds() / 3600), 2)
-    total_hours.append(total_hoursop)
-    sum_prodop = sum(op1['Total_Prod'])
-    sum_prod.append(sum_prodop)
-    sum_mcop = sum(op1['M/C'])
-    sum_mc.append(sum_mcop)
-    sum_castop = sum(op1['CASTING'])
-    sum_cast.append(sum_castop)
-    sum_otherop = sum(op1['OTHER'])
-    sum_other.append(sum_otherop)
-    sum_finalprodop = sum(op1['Final_Prod'])
-    sum_finalprod.append(sum_finalprodop)
-    avg_hourlyop = round((sum_prodop / total_hoursop), 2)
-    avg_hourly.append(avg_hourlyop)
-    avg_dayop = round((sum_prodop / daysop), 2)
-    avg_day.append(avg_dayop)
-product = {
-    'Operator': distinct_values,
-    'DAYS': days,
-    'HOURS': total_hours,
-    'Total_Prod': sum_prod,
-    'M/C': sum_mc,
-    'Casting': sum_cast,
-    'Other': sum_other,
-    'Final_Prod': sum_finalprod,
-    'Hourly_Avg': avg_hourly,
-    'Day_Avg': avg_day
-}
-print(product)
-prod_df = pd.DataFrame(product)
-prod_df['Deduct_Machine_rej'] = prod_df['Total_Prod'] - prod_df['M/C']
-prod_df['Deduct_Machine_rej'] = prod_df['Deduct_Machine_rej'].round(2)
-targetv = 55
-incentivev = 0.70
-prod_df['Hours X Target'] = prod_df['HOURS'] * targetv
-prod_df['Hours X Target'] = prod_df['Hours X Target'].round(2)
-prod_df['Extra Prod'] = prod_df['Deduct_Machine_rej'] - prod_df['Hours X Target']
-prod_df['Extra Prod'] = prod_df['Extra Prod'].round(2)
-prod_df['Incentive'] = prod_df['Extra Prod'] * incentivev
-prod_df['Incentive'] = prod_df['Incentive'].round(2)
+# multi table
+machinej = []
+t_prodj = []
+mcj = []
+castj = []
+otherj = []
+final = []
+column_names = ['Machines', 'PRODUCT', 'Total_Prod', 'M/C', 'CASTING', 'OTHER', 'FINAL']
+dflist = []
+# Create an empty dataframe with the specified column names
+jobs = pd.DataFrame(columns=column_names)
 
-sumrow2 = {'Operator': 'Total', 'DAYS': sum(prod_df['DAYS']), 'HOURS': sum(prod_df['HOURS']),
-           'Total_Prod': sum(prod_df['Total_Prod']), 'M/C': sum(prod_df['M/C']), 'Casting': sum(prod_df['Casting']),
-           'Other': sum(prod_df['Other']), 'Final_Prod': sum(prod_df['Final_Prod']),
-           'Hourly_Avg': round(sum(prod_df['Hourly_Avg']), 2), 'Day_Avg': round(sum(prod_df['Day_Avg']), 2),
-           'Deduct_Machine_rej': round(sum(prod_df['Deduct_Machine_rej']), 2),
-           'Hours X Target': round(sum(prod_df['Hours X Target']), 2),
-           'Extra Prod': round(sum(prod_df['Extra Prod']), 2), 'Incentive': round(sum(prod_df['Incentive']), 2)}
-sumrow2 = pd.DataFrame(sumrow2, index=['Total'])
-operatordf = pd.concat([prod_df, sumrow2], axis=0)
-# print(operatordf.columns)
-# df = pd.DataFrame(data)
-# df=operatordf.copy()
+for j in range(len(distinct_values_Job)):
+    job1 = df[df['Job'] == distinct_values_Job[j]]
+    job1 = job1.loc[mask]
+    job1 = job1.reset_index(drop=True)
+    job1 = job1.astype(
+        {'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int', 'Final_Prod': 'int'})
+    distinct_values_Mc = job1['Machines'].unique()
+    distinct_values_Mc = list(distinct_values_Mc)
 
-# Create the main window
-window = tk.Tk()
-window.title('Horizontal Scrollbar Example')
+    jobs = pd.DataFrame(columns=column_names)
 
-# Create a frame
-frame = ttk.Frame(window)
-frame.grid(row=0, column=0, sticky='nsew')
+    for m in range(len(distinct_values_Mc)):
+        job2 = job1[job1['Machines'] == distinct_values_Mc[m]]
+        job2 = job2.astype({'Total_Prod': 'int', 'M/C': 'int', 'CASTING': 'int', 'OTHER': 'int', 'Total_Rej': 'int',
+                            'Final_Prod': 'int'})
+        job3 = {'Machines': distinct_values_Mc[m], 'PRODUCT': distinct_values_Job[j],
+                'Total_Prod': sum(job2['Total_Prod']), 'M/C': sum(job2['M/C']), 'CASTING': sum(job2['CASTING']),
+                'OTHER': sum(job2['OTHER']), 'FINAL': sum(job2['Final_Prod'])}
+        job3 = pd.DataFrame(job3, index=[m])
+        jobs = pd.concat([jobs, job3], ignore_index=True)
+    job3 = {'Machines': 'Total', 'Total_Prod': sum(jobs['Total_Prod']), 'M/C': sum(jobs['M/C']),
+            'CASTING': sum(jobs['CASTING']), 'OTHER': sum(jobs['OTHER']), 'FINAL': sum(jobs['FINAL'])}
+    job3 = pd.DataFrame(job3, index=[0])
+    jobs = pd.concat([jobs, job3], ignore_index=True)
+    dflist.append(jobs)
 
-# Create a canvas
-canvas = tk.Canvas(frame)
-canvas.grid(row=0, column=0, sticky='nsew')
+# df = pd.DataFrame(dflist)
 
-# Add a horizontal scrollbar
-scrollbar = ttk.Scrollbar(frame, orient='horizontal', command=canvas.xview)
-scrollbar.grid(row=1, column=0, sticky='ew')
-canvas.configure(xscrollcommand=scrollbar.set)
-
-# Create a frame inside the canvas
-df_frame = ttk.Frame(canvas)
-canvas.create_window((0, 0), window=df_frame, anchor='nw')
-
-# Create a Pandas DataFrame table within the frame
-table = ttk.Treeview(df_frame, columns=list(operatordf.columns), show='headings')
-table.grid(row=0, column=0, sticky='nsew')
-
-# Insert column headers
-for column in operatordf.columns:
-    table.heading(column, text=column)
-
-# Insert data rows
-for _, row in operatordf.iterrows():
-    table.insert('', 'end', values=list(row))
-
-# Decrease the width of all columns
-for column in operatordf.columns:
-    table.column(column, width=80)  # Specify the desired width
-# Configure the grid weights
-window.grid_rowconfigure(0, weight=1)
-window.grid_columnconfigure(0, weight=1)
-frame.grid_rowconfigure(0, weight=1)
-frame.grid_columnconfigure(0, weight=1)
-df_frame.grid_rowconfigure(0, weight=1)
-df_frame.grid_columnconfigure(0, weight=1)
-
-# Update the canvas scrolling region
-canvas.update_idletasks()
-canvas.configure(scrollregion=canvas.bbox('all'))
-
-# Start the main loop
-window.mainloop()
+display_dataframe(dflist)
