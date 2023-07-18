@@ -1,45 +1,26 @@
-import tkinter as tk
-from tkinter import ttk
+import requests
 
-# Create the main window
-window = tk.Tk()
-window.title("Scrollbar Example")
+def make_get_request(url):
+    try:
+        response = requests.get(url)
 
-# Create a frame
-frame = ttk.Frame(window)
-frame.grid(row=0, column=0, sticky="nsew")
+        # Check if the request was successful (status code 200)
+        if response.status_code == 200:
+            return response.text  # If you expect JSON data, use response.json() instead of response.text
+        else:
+            print(f"Request failed with status code: {response.status_code}")
+            return None
 
-# Create a scrollbar
-scrollbar = ttk.Scrollbar(frame)
-scrollbar.grid(row=0, column=1, sticky="ns")
+    except requests.exceptions.RequestException as e:
+        print(f"An error occurred: {e}")
+        return None
 
-# Create a Treeview widget within the frame
-tree = ttk.Treeview(frame, yscrollcommand=scrollbar.set)
-tree.grid(row=0, column=0, sticky="nsew")
+# Example usage:
+url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6HrGh7EOzzejrvzkG_TGUM_GoGVDuvlUq7UcYqHlESZX6Vv8Hvwatsp4FLdE4Nmff9z5LSG3KQFq9/pub?gid=700061257&single=true&output=csv"
+data = make_get_request(url)
+li=[]
+if data:
+    # print(data)
+    li.append(data)
 
-# Configure the scrollbar to work with the Treeview widget
-scrollbar.config(command=tree.yview)
-
-# Add columns to the Treeview
-tree["columns"] = ("Name", "Age")
-
-# Format the columns
-tree.column("#0", width=100)
-tree.column("Name", width=100)
-tree.column("Age", width=100)
-
-# Add headings to the columns
-tree.heading("#0", text="ID")
-tree.heading("Name", text="Name")
-tree.heading("Age", text="Age")
-
-# Add 20 items to the Treeview
-for i in range(1, 21):
-    tree.insert("", tk.END, text=str(i), values=("Name " + str(i), str(i * 5)))
-
-# Configure grid weights to make the frame expandable
-frame.grid_rowconfigure(0, weight=1)
-frame.grid_columnconfigure(0, weight=1)
-
-# Start the main event loop
-window.mainloop()
+print(li[0])

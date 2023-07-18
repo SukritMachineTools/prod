@@ -2,7 +2,7 @@ from tkinter import *
 from tkinter.ttk import Treeview
 from tkinter import filedialog
 from PIL import Image, ImageTk
-# from tkinter import ttk
+from tkinter import ttk
 from tkinter import messagebox
 import pandas as pd
 import re
@@ -406,7 +406,7 @@ class home:
             global targetv
             flag = 0
 
-            if len(jobvalue.get()) > 0:
+            if (jobvalue.get()) !="Select an option":
                 job = jobvalue.get()
                 print(job)
             # else:
@@ -841,6 +841,10 @@ class home:
 
             pass
 
+        def on_select(event):
+            job = jobvalue.get()
+            # print(f"Selected value: {selected_value}")
+
 
 
         def submitD():
@@ -852,13 +856,21 @@ class home:
             global targetv
             flag=0
 
-            if len(jobvalue.get()) > 0:
-                job=jobvalue.get()
+            # if len(jobvalue.get()) > 0:
+            #     job=jobvalue.get()
+            #     print(job)
+            # else:
+            #     print("job error")
+            #     messagebox.showerror("Error", "Enter the Job")
+            #     flag=1
+            if (jobvalue.get()) !="Select an option":
+                job = jobvalue.get()
                 print(job)
             else:
                 print("job error")
                 messagebox.showerror("Error", "Enter the Job")
-                flag=1
+                flag = 1
+
 
             if check_btime_format(bTimevalue.get()) !="Error":
                 breakTime=check_btime_format(bTimevalue.get())
@@ -915,6 +927,8 @@ class home:
         global start_date
         global end_date
 
+
+
         frame1 = Frame(self.root, highlightbackground="blue", highlightthickness=1, bg=bgcolor)
         Label(frame1, text="Su", fg="#ffffff", font="Algerian 27 bold", padx=7, pady=7, bg="#000000").grid(
             row=0,
@@ -950,8 +964,17 @@ class home:
               fg="#000000").grid(row=4, column=0)
         Label(frame4, text="Job", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
               fg="blue").grid(row=1, column=3)
-        jobvalue = StringVar()
-        Entry(frame4, width=20, textvariable=jobvalue, font="Arial_Black 12 bold", ).grid(row=1, column=4)
+        # jobvalue = StringVar()
+        prdf = pd.read_csv(
+            "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6HrGh7EOzzejrvzkG_TGUM_GoGVDuvlUq7UcYqHlESZX6Vv8Hvwatsp4FLdE4Nmff9z5LSG3KQFq9/pub?gid=700061257&single=true&output=csv")
+        jobdf = prdf['Job']
+        jobdf.dropna(inplace=True)
+        joblist = list(jobdf)
+        jobvalue=ttk.Combobox(frame4, values=joblist)
+        jobvalue.grid(row=1, column=4)
+        jobvalue.set("Select an option")
+        jobvalue.bind("<<ComboboxSelected>>", on_select)
+        # Entry(frame4, width=20, textvariable=jobvalue, font="Arial_Black 12 bold", ).grid(row=1, column=4)
         Label(frame4, text="Break Time", font="Calibri 13 bold", padx=7, pady=7, bg=bgcolor,
               fg="blue").grid(row=3, column=3)
         bTimevalue = StringVar()
