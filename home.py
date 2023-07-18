@@ -36,6 +36,11 @@ class home:
         self.root.title("Sukrit Production Records")
         self.root.configure(background=bgcolor)
 
+        #############################################################
+        def intialFunc():
+            pass
+
+
         ################MACHINE FUNCTION 1############################
         def machineFunc():
             try:
@@ -321,8 +326,9 @@ class home:
                             'FINAL': sum(job2['Final_Prod'])}
                     job3 = pd.DataFrame(job3, index=[m])
                     jobs = pd.concat([jobs, job3], ignore_index=True)
-                job3 = {'Machines': 'Total', 'Total_Prod': sum(jobs['Total_Prod']), 'M/C': sum(jobs['M/C']),
-                        'CASTING': sum(jobs['CASTING']), 'OTHER': sum(jobs['OTHER']), 'FINAL': sum(jobs['FINAL'])}
+                job3 = {'Machines': 'Total', 'PRODUCT': '...', 'Total_Prod': sum(jobs['Total_Prod']),
+                        'M/C': sum(jobs['M/C']), 'CASTING': sum(jobs['CASTING']), 'OTHER': sum(jobs['OTHER']),
+                        'FINAL': sum(jobs['FINAL'])}
                 job3 = pd.DataFrame(job3, index=[0])
                 jobs = pd.concat([jobs, job3], ignore_index=True)
                 dflist.append(jobs)
