@@ -1,5 +1,6 @@
 import requests
-
+import time
+from threading import Thread, Lock
 def make_get_request(url):
     try:
         response = requests.get(url)
@@ -16,11 +17,15 @@ def make_get_request(url):
         return None
 
 # Example usage:
-url = "https://docs.google.com/spreadsheets/d/e/2PACX-1vT6HrGh7EOzzejrvzkG_TGUM_GoGVDuvlUq7UcYqHlESZX6Vv8Hvwatsp4FLdE4Nmff9z5LSG3KQFq9/pub?gid=700061257&single=true&output=csv"
+url = "http://192.168.4.1"
 data = make_get_request(url)
-li=[]
-if data:
-    # print(data)
-    li.append(data)
 
-print(li[0])
+if data:
+    print(data)
+    li=data.split(",")
+    print("Total Time",li[0])
+    print("Production Time",li[1])
+    print("n-Prod Time",li[2])
+    print("Clock Time",li[3])
+    print("part count",li[4])
+
