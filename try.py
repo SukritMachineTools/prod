@@ -28,4 +28,6 @@ if data:
     print("n-Prod Time",li[2])
     print("Clock Time",li[3])
     print("part count",li[4])
+    print("real_time",li[5])
+    print("var1",li[6])
 
