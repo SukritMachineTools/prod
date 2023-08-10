@@ -30,6 +30,7 @@
 #     print("part count",li[4])
 #     print("real_time",li[5])
 #     print("var1",li[6])
+#     print("current ",li[7])
 
 
 #post request
@@ -42,7 +43,7 @@ url = "http://192.168.4.1/"
 new_value = "resetCounter"
 
 # Data to send in the POST request
-data1 = {"action": new_value}
+data1 = {"action": new_value,"second":"15","minute":"03","hour":"07"}
 
 # Making the POST request
 response = requests.post(url, data=data1)
