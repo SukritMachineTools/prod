@@ -30,4 +30,5 @@ if data:
     print("part count",li[4])
     print("var1",int(li[5])-2)
     print("real time",li[6])
-    # print("current ",li[7])
+    print("p_o ",li[7])
+    print("p_min ",li[8])

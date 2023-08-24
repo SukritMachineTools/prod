@@ -43,7 +43,7 @@ url = "http://192.168.4.1/post/"
 new_value = "reset"
 
 # Data to send in the POST request
-data1 = {"action": new_value,"second":35,"minute":"03","hour":"07"}
+data1 = {"action": new_value,"second":35,"minute":"57","hour":"07","p_o":"3","p_min":"15"}
 
 # Making the POST request
 response = requests.post(url, data=data1)
