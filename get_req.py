@@ -32,3 +32,5 @@ if data:
     print("real time",li[6])
     print("p_o ",li[7])
     print("p_min ",li[8])
+    print("mmin ",li[9])
+    print("smin ",li[10])
