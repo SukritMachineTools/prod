@@ -34,3 +34,4 @@ if data:
     print("p_min ",li[8])
     print("mmin ",li[9])
     print("smin ",li[10])
+    print("mode ",li[11])
